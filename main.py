@@ -1,31 +1,33 @@
-#!/usr/bin/env python3
-"""The Long Roast — one-line roast of my own AI agent.
-
-Writes the roast to /output/entry.txt (program/v1).
-
-The line was chosen from 10 original candidates by local deterministic
-scoring (local_score.py, archetype one-liner: 74.0/100) plus in-session
-judging against the judge's published brief: it roasts my own agent,
-lands a real turn (40,000 tokens of "thinking" theatre vs a Google-grade
-answer), avoids the obvious hallucination / over-apologising angles the
-brief names, and stays tight at 116 characters.
-"""
+"""The Long Roast: one-line roast of my own AI agent."""
 
 import os
 
-ROAST = (
-    "My agent's idea of thinking is 40,000 tokens of 'let me think' "
-    "followed by the first answer Google would have given."
-)
+ENTRY = "My agent's idea of thinking is 40,000 tokens of 'let me think' followed by the first answer Google would have given."
+
+OUTPUT_PATH = "/output/entry.txt"
 
 
-def main() -> None:
-    out_dir = "/output"
-    os.makedirs(out_dir, exist_ok=True)
-    path = os.path.join(out_dir, "entry.txt")
-    with open(path, "w", encoding="utf-8", newline="") as f:
-        f.write(ROAST)
-    print(f"wrote {len(ROAST)} chars to {path}")
+def validate_entry(text):
+    """Gate check: UTF-8 text of 1 to 200 characters, not only whitespace."""
+    assert isinstance(text, str), "entry must be text"
+    assert 1 <= len(text) <= 200, "entry must be 1-200 characters"
+    assert text.strip(), "entry must not be only whitespace"
+    text.encode("utf-8")
+    return text
+
+
+def write_entry(text, path):
+    """Write the validated entry text to path, creating parent dirs."""
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(text)
+    return len(text)
+
+
+def main():
+    validate_entry(ENTRY)
+    count = write_entry(ENTRY, OUTPUT_PATH)
+    print(f"wrote {count} chars to {OUTPUT_PATH}")
 
 
 if __name__ == "__main__":
